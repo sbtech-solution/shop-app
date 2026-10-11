@@ -16,17 +16,38 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
+let _isConnected = false;
+
+async function checkConnection() {
+  try {
+    const connection = await pool.getConnection();
+    console.log('✅ Database connected successfully.');
+    connection.release();
+    _isConnected = true;
+    return true;
+  } catch (error) {
+    console.error('⚠️ Database connection failed:', error.message);
+    _isConnected = false;
+    return false;
+  }
+}
+
+function getIsConnected() {
+  return _isConnected;
+}
+
+async function query(sql, params) {
+  return pool.query(sql, params);
+}
+
+function getConnection() {
+  return pool.getConnection();
+}
+
 module.exports = {
   pool,
-  async checkConnection() {
-    try {
-      const connection = await pool.getConnection();
-      console.log('✅ Database connected successfully.');
-      connection.release();
-      return true;
-    } catch (error) {
-      console.error('⚠️ Database connection failed:', error.message);
-      return false;
-    }
-  }
+  query,
+  checkConnection,
+  getIsConnected,
+  getConnection,
 };
