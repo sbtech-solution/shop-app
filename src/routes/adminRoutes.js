@@ -3,6 +3,7 @@ const router = express.Router();
 const adminController = require('../controllers/adminController');
 const productController = require('../controllers/productController');
 const categoryController = require('../controllers/categoryController');
+const reviewController = require('../controllers/reviewController');
 const { authenticate } = require('../middleware/authMiddleware');
 const { requireAdmin } = require('../middleware/adminMiddleware');
 
@@ -32,7 +33,7 @@ router.patch('/categories/:id', categoryController.updateCategory);
 router.delete('/categories/:id', categoryController.deleteCategory);
 
 // Reviews management
-router.get('/reviews', adminController.getAllReviews);
-router.delete('/reviews/:id', adminController.deleteReview);
+router.get('/reviews', reviewController.getAllReviews);
+router.delete('/reviews/:id', reviewController.deleteReview);
 
 module.exports = router;
