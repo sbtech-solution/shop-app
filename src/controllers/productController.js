@@ -140,7 +140,7 @@ exports.getProducts = async (req, res, next) => {
       params.push(`%${search}%`, `%${search}%`);
     }
 
-    query += ` ORDER BY p.id DESC LIMIT ? OFFSET ?`;
+    query += ` ORDER BY p.display_order ASC, p.id DESC LIMIT ? OFFSET ?`;
     const offset = (parseInt(page, 10) - 1) * parseInt(limit, 10);
     params.push(parseInt(limit, 10), offset);
 
@@ -202,7 +202,7 @@ exports.getProductById = async (req, res, next) => {
 
 exports.createProduct = async (req, res, next) => {
   try {
-    const { category_id, name, description, price, stock_quantity, images } = req.body;
+    const { category_id, name, description, price, stock_quantity, display_order, images } = req.body;
     if (!name || !price) {
       return res.status(400).json({ success: false, message: 'Name and price are required.' });
     }
@@ -215,6 +215,7 @@ exports.createProduct = async (req, res, next) => {
         description: description || '',
         price: parseFloat(price).toFixed(2),
         stock_quantity: parseInt(stock_quantity || 0, 10),
+        display_order: parseInt(display_order || 0, 10),
         is_active: 1,
         image_url: (images && images[0]) || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80',
         images: images || []
@@ -228,8 +229,8 @@ exports.createProduct = async (req, res, next) => {
       await connection.beginTransaction();
 
       const [result] = await connection.query(
-        'INSERT INTO products (category_id, name, description, price, stock_quantity) VALUES (?, ?, ?, ?, ?)',
-        [category_id || null, name, description || '', price, stock_quantity || 0]
+        'INSERT INTO products (category_id, name, description, price, stock_quantity, display_order) VALUES (?, ?, ?, ?, ?, ?)',
+        [category_id || null, name, description || '', price, stock_quantity || 0, display_order || 0]
       );
 
       const productId = result.insertId;
@@ -263,7 +264,7 @@ exports.createProduct = async (req, res, next) => {
 exports.updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, description, price, stock_quantity, category_id, is_active } = req.body;
+    const { name, description, price, stock_quantity, category_id, display_order, is_active } = req.body;
 
     if (!db.getIsConnected()) {
       const idx = fallbackProducts.findIndex(p => p.id === parseInt(id, 10));
@@ -281,6 +282,7 @@ exports.updateProduct = async (req, res, next) => {
     if (description !== undefined) { updates.push('description = ?'); params.push(description); }
     if (price !== undefined) { updates.push('price = ?'); params.push(price); }
     if (stock_quantity !== undefined) { updates.push('stock_quantity = ?'); params.push(stock_quantity); }
+    if (display_order !== undefined) { updates.push('display_order = ?'); params.push(display_order); }
     if (category_id !== undefined) { updates.push('category_id = ?'); params.push(category_id); }
     if (is_active !== undefined) { updates.push('is_active = ?'); params.push(is_active); }
 
