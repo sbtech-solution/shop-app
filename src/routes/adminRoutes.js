@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
+const adminOrderController = require('../controllers/adminOrderController');
 const productController = require('../controllers/productController');
 const categoryController = require('../controllers/categoryController');
 const reviewController = require('../controllers/reviewController');
@@ -20,7 +21,7 @@ router.patch('/products/:id', productController.updateProduct);
 router.delete('/products/:id', productController.deleteProduct);
 
 // Orders management (with products & guest info)
-router.get('/orders', adminController.getAllOrders);
+router.get('/orders', adminOrderController.getAllOrders);
 router.patch('/orders/:id', adminController.updateOrderStatus);
 
 // Users management
