@@ -18,14 +18,21 @@ router.post('/products', productController.createProduct);
 router.patch('/products/:id', productController.updateProduct);
 router.delete('/products/:id', productController.deleteProduct);
 
-// Orders management
+// Orders management (with products & guest info)
 router.get('/orders', adminController.getAllOrders);
 router.patch('/orders/:id', adminController.updateOrderStatus);
 
 // Users management
 router.get('/users', adminController.getAllUsers);
 
-// Categories
+// Categories management
+router.get('/categories', categoryController.getAdminCategories);
 router.post('/categories', categoryController.createCategory);
+router.patch('/categories/:id', categoryController.updateCategory);
+router.delete('/categories/:id', categoryController.deleteCategory);
+
+// Reviews management
+router.get('/reviews', adminController.getAllReviews);
+router.delete('/reviews/:id', adminController.deleteReview);
 
 module.exports = router;
